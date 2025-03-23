@@ -11,11 +11,16 @@ Si c’est le cas, on transfère la **classe (fiche pratique)** de la `question_
 
 ---
 
-## 🧠 Modèle utilisé : Siamese BERT avec CamemBERT
+## 🧠 Modèle utilisé : Entrainement d'un modèle Siamese basé sur des représentations gelées de CamemBERT
 
-Le cœur du projet repose sur un **modèle Siamese BERT** construit à partir du checkpoint francophone :
+Le modèle mis en place repose sur une architecture **Siamese Network** entraînée pour détecter la similarité entre deux questions en français.
 
+Le backbone linguistique utilisé est le modèle pré-entraîné francophone :
 > [`camembert/camembert-base-wikipedia-4gb`](https://huggingface.co/camembert/camembert-base-wikipedia-4gb)
+
+CamemBERT est utilisé **en tant qu’extracteur de caractéristiques figé** (`trainable=False`) : ses poids ne sont pas modifiés durant l’entraînement. Le fine-tuning concerne uniquement les **couches supérieures** du modèle Siamese.
+
+Cette approche permet d’exploiter la richesse sémantique de CamemBERT tout en entraînant un modèle léger et spécialisé sur la tâche de similarité.
 
 ### 🔧 Architecture du modèle :
 
@@ -40,6 +45,26 @@ Les poids de CamemBERT sont figés (`trainable=False`) pour accélérer l’entr
   - `ReduceLROnPlateau` automatique
 - **Epochs** : 18
 - **Batch size** : 32
+
+### 📊 Évaluation du modèle
+
+Le modèle a été évalué sur un jeu de validation constitué de paires de questions annotées comme similaires ou non.
+
+### ✅ Résultats obtenus :
+
+| Métrique              | Score        |
+|-----------------------|--------------|
+| Accuracy              | 0.80         |
+
+
+➡️ Le modèle atteint **80% de précision globale**  sur les données test.  
+Il est utilisé pour **transférer la fiche pratique** d’une question consensus à une nouvelle question automatiquement.
+
+### 🧪 Méthode d’évaluation
+
+- Les prédictions sont comparées à la vérité terrain.
+- Seules les paires de questions prédictes comme "similaires" (probabilité > 0.5) sont utilisées pour l’attribution de fiche
+
 
 ---
 

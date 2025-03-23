@@ -11,17 +11,39 @@ Si c’est le cas, on transfère la **classe (fiche pratique)** de la `question_
 
 ---
 
-## 🔧 Modèle utilisé
+## 🧠 Modèle utilisé : Siamese BERT avec CamemBERT
 
-Le modèle utilisé est un **Siamese BERT** basé sur la version francophone pré-entraînée :
+Le cœur du projet repose sur un **modèle Siamese BERT** construit à partir du checkpoint francophone :
 
-- **Checkpoint :** [`camembert/camembert-base-wikipedia-4gb`](https://huggingface.co/camembert/camembert-base-wikipedia-4gb)
-- **Architecture Siamese** : deux entrées (question_1, question_2) passent dans un encodeur partagé (`CamemBERT`) suivi d'une couche dense pour évaluer leur similarité.
-- **Fonction de perte :** Binary Cross-Entropy
-- **Fine-tuning** effectué sur un jeu de paires de questions annotées comme similaires (1) ou non (0)
-- **Accuracy sur validation :** ~0.80
+> [`camembert/camembert-base-wikipedia-4gb`](https://huggingface.co/camembert/camembert-base-wikipedia-4gb)
 
-Le choix de ce checkpoint vise à tirer parti des performances de CamemBERT entraîné sur 4GB de Wikipédia française.
+### 🔧 Architecture du modèle :
+
+- **Encodeur partagé** : le modèle utilise une architecture Siamese où deux questions passent indépendamment par le **même encoder CamemBERT** (poids partagés).
+- **Encapsulation BERT** : le modèle est encapsulé dans une couche personnalisée (`BertLayer`).
+- **Pooling** : sortie moyenne (`GlobalAveragePooling1D`) pour obtenir un vecteur de chaque question.
+- **Comparaison** : les vecteurs sont comparés via la **distance L1** (couche personnalisée `L1Dist`).
+- **Classification** :
+  - Dense(512, relu)
+  - Dense(1, sigmoid) → prédiction de similarité (0 ou 1)
+
+### 🔒 BERT figé
+
+Les poids de CamemBERT sont figés (`trainable=False`) pour accélérer l’entraînement.
+
+### 📉 Entraînement
+
+- **Fonction de perte** : `binary_crossentropy`
+- **Optimiseur** : `Adam`, `lr=1e-5`
+- **Callbacks** :
+  - `EarlyStopping` sur la validation (`patience=5`)
+  - `ReduceLROnPlateau` automatique
+- **Epochs** : 18
+- **Batch size** : 32
+
+---
+
+🎯 **Objectif** : prédire si deux questions sont similaires (`1`) ou non (`0`), afin de transférer la fiche pratique de la question consensus vers la nouvelle question.
 
 --
 

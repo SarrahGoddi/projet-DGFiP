@@ -33,7 +33,7 @@ Le choix de ce checkpoint vise à tirer parti des performances de CamemBERT entr
 | `info_particulier_impot.csv`     | Données |
 | `questions_fiches_fip.csv`     | Données |
 | `data/`                    | jeu de paires de questions annotées (pour l'entrainement de Siamese BERT) |
-| `README.md`                | Ce fichier de présentation |
+| `README.md`                | Fichier de présentation |
 
 
 ---

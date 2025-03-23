@@ -1,4 +1,4 @@
-# 📄 test DGFiP – Attribution de fiche pratique par similarité des questions
+# 📄 Test DGFiP – Attribution de fiche pratique par similarité des questions
 
 Ce projet vise à attribuer une **fiche pratique** à une question d’utilisateur, en identifiant une question consensus similaire à l’aide d’un modèle **Siamese BERT fine-tuné**.
 
